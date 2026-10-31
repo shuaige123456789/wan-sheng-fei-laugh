@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>万圣霏大笑</title>
+  <meta name="title" content="万圣霏大笑" />
+  <meta property="og:title" content="万圣霏大笑" />
+  <meta name="description" content="万圣霏大笑" />
+  <meta property="og:description" content="万圣霏大笑" />
+  <meta name="apple-mobile-web-app-title" content="万圣霏大笑" />
+  <link rel="stylesheet" href="style.css?v=8" />
+</head>
+<body>
+  <div class="page">
+    <div class="video-area">
+      <div class="video-wrap" id="videoWrap">
+        <!-- 想换人：把 assets/laugh.mp4 和 assets/laugh.m4a 换掉即可 -->
+        <video id="laughVideo" class="video" src="assets/laugh.mp4?v=8" poster="assets/poster.jpg"
+               playsinline webkit-playsinline preload="auto" muted
+               x5-playsinline x5-video-player-type="h5" x5-video-player-fullscreen="false"
+               disablepictureinpicture disableremoteplayback
+               x-webkit-airplay="deny"
+               controlslist="nodownload nofullscreen noremoteplayback"></video>
+
+        <!-- 声音优先走独立音频；万一它没播起来，会自动退回用视频里的音轨 -->
+        <audio id="laughAudio" src="assets/laugh.m4a?v=8" preload="auto"></audio>
+
+        <!-- 透明遮罩：物理覆盖浏览器注入的右上角投屏/画中画按钮 -->
+        <img id="still" class="still show" src="assets/still.jpg?v=8" alt="" aria-hidden="true" />
+        <div class="video-shield"></div>
+
+        <div class="loader" id="loader">
+          <i class="spin"></i>
+          <span>笑一下，马上来…</span>
+        </div>
+
+        <button class="sound-btn" id="soundBtn" type="button" aria-label="声音">
+          <svg class="sound-icon" id="soundOnIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 5 6 9H2v6h4l5 4V5z"></path>
+            <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+            <path d="M18.5 5.5a9 9 0 0 1 0 13"></path>
+          </svg>
+          <svg class="sound-icon hidden" id="soundOffIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 5 6 9H2v6h4l5 4V5z"></path>
+            <path d="m16 9 5 6"></path>
+            <path d="m21 9-5 6"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="btn-group">
+        <button class="laugh-btn" id="laughBtn" onclick="toggleLaugh()">
+          <svg class="btn-icon loop-icon" id="loopIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="17 1 21 5 17 9"></polyline>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+            <polyline points="7 23 3 19 7 15"></polyline>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+          </svg>
+          <svg class="btn-icon stop-icon hidden" id="stopIcon" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+          </svg>
+          <span id="btnText">循环大笑</span>
+        </button>
+      </div>
+      <div class="hint" id="hint">
+        <svg class="hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5 6 9H2v6h4l5 4V5z"></path>
+          <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+          <path d="M18.5 5.5a9 9 0 0 1 0 13"></path>
+        </svg>
+        点一下，她就笑起来
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="script.js?v=8"></script>
+</body>
+</html>
