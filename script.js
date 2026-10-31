@@ -1,4 +1,4 @@
-// 一进来是原图；点一下开始笑 + 出声；5 秒后自动停回原图。
+﻿// 一进来是原图；点一下开始笑 + 出声；5 秒后自动停回原图。
 // 慢网处理：先转圈等缓冲，够播了再同时启动画面和声音，避免“有声无画”。
 var video = document.getElementById('laughVideo');
 var audio = document.getElementById('laughAudio');
@@ -22,6 +22,9 @@ var toastTimer = null;
 var checkTimer = null;
 var endTimer = null;
 var waitTimer = null;
+var lowTimer = null;
+var usingLow = false;
+var waitCount = 0;
 
 var PENDING = 'pending';
 
@@ -82,11 +85,35 @@ function requestPlay() {
     showLoader();
     clearTimeout(waitTimer);
     waitTimer = setTimeout(begin, 15000);
+    // 6 秒还没缓冲够 -> 换低码率版本
+    clearTimeout(lowTimer);
+    lowTimer = setTimeout(function () { if (!playing) useLowRes(); }, 6000);
     video.addEventListener('canplay', function once() {
       video.removeEventListener('canplay', once);
       clearTimeout(waitTimer);
+      clearTimeout(lowTimer);
       begin();
     });
+  }
+}
+
+// 换成 360p 低码率版（卡顿时自动降级）
+function useLowRes() {
+  if (usingLow) return;
+  usingLow = true;
+  var t = video.currentTime;
+  video.src = 'assets/laugh-low.mp4';
+  video.load();
+  if (laughing && !playing) {
+    showLoader();
+    var once = function () {
+      video.removeEventListener('canplay', once);
+      begin();
+    };
+    video.addEventListener('canplay', once);
+  } else if (playing) {
+    video.currentTime = t;
+    fire(video);
   }
 }
 
@@ -133,6 +160,8 @@ function stop() {
   clearTimeout(checkTimer);
   clearTimeout(endTimer);
   clearTimeout(waitTimer);
+  clearTimeout(lowTimer);
+  waitCount = 0;
   hideLoader();
   video.pause();
   video.currentTime = 0;
@@ -191,6 +220,12 @@ if (video) {
 
   video.addEventListener('error', function () { hideLoader(); showToast('画面加载失败'); });
   video.addEventListener('ended', function () { if (playing) stop(); });
+  // 播放中途反复卡顿 -> 降级到低码率
+  video.addEventListener('waiting', function () {
+    if (!playing || usingLow) return;
+    waitCount++;
+    if (waitCount >= 2) useLowRes();
+  });
   if (audio) {
     audio.addEventListener('error', function () { showToast('声音加载失败'); });
   }
